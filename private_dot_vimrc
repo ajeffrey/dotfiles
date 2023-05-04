@@ -1,0 +1,45 @@
+" plugins
+call plug#begin()
+
+" Language Server Protocol support
+Plug 'prabirshrestha/vim-lsp'
+
+" Svelte support
+Plug 'othree/html5.vim'
+Plug 'pangloss/vim-javascript'
+Plug 'evanleck/vim-svelte', {'branch': 'main'}
+
+call plug#end()
+
+" indent
+filetype plugin indent on
+set expandtab
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+
+" misc
+set backspace=indent,eol,start
+
+" ui
+set number
+set ruler
+set showcmd
+set incsearch
+set hlsearch
+syntax enable
+
+" theme
+let g:solarized_termcolors=256
+set background=dark
+colorscheme solarized
+
+" cursor line
+set cursorline
+hi cursorline cterm=none term=none
+autocmd WinEnter * setlocal cursorline
+autocmd WinLeave * setlocal nocursorline
+highlight CursorLine guibg=#303030 ctermbg=235
+highlight CursorLineNR ctermfg=239 ctermbg=247 term=bold cterm=bold
+
+let g:svelte_preprocessors = ['typescript']
