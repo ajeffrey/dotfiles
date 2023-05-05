@@ -29,6 +29,9 @@ set incsearch
 set hlsearch
 syntax enable
 
+" custom commands
+command C let @/ = "" "clear search
+
 " theme
 let g:solarized_termcolors=256
 set background=dark

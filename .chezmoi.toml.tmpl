@@ -1,0 +1,4 @@
+{{- $env := promptStringOnce . "env" "Environment name" -}}
+
+[data]
+  env = {{ $env | quote }}
