@@ -10,8 +10,14 @@ plugins=(git nvm)
 source $ZSH/oh-my-zsh.sh
 
 # aliases
-alias zshrc="chezmoi edit -a ~/.zshrc && zsh"
-alias vimrc="chezmoi edit -a ~/.vimrc"
+alias cz=chezmoi
+alias zshrc="cz edit -a ~/.zshrc && zsh"
+alias vimrc="cz edit -a ~/.vimrc"
+alias bc.zsh="cz edit -a $ZSH/custom/bookcreator.zsh && zsh"
+
+{{- if eq .chezmoi.config.data.env "bookcreator" }}
+source $ZSH/custom/bookcreator.zsh
+{{- end }}
 
 {{- if eq .chezmoi.config.data.env "phone" }}
 
