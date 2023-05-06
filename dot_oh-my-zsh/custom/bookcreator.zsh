@@ -1,4 +1,5 @@
 # The next line updates PATH for the Google Cloud SDK.
+#
 if [ -f '$HOME/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
@@ -8,15 +9,12 @@ export PATH="/opt/homebrew/opt/python@3.9/libexec/bin:$PATH"
 export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
 export PATH="$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
+source "$HOME/google-cloud-sdk/completion.zsh.inc"
+source "$HOME/google-cloud-sdk/path.zsh.inc"
+
 # export GCLOUD_PROJECT=bookcreator-dev
 
-alias csp="cloud_sql_proxy -instances=bookcreator-dev:us-central1:analytics=tcp:3311,bookcreator-test:us-central1:analytics=tcp:3312,book-creator:us-central1:analytics=tcp:3313,book-creator:us-central1:analytics-replica=tcp:3314"
-alias cspd="cloud_sql_proxy -instances=bookcreator-dev:us-central1:analytics=tcp:::1:3311"
-alias devorgsdb="gcloud compute ssh alloydb-forwarder --project=bookcreator-dev  -- -NL 5432:10.127.32.32:5432"
-alias testorgsdb="gcloud compute ssh alloydb-forwarder --project=bookcreator-test --zone europe-west2-a -- -NL 5432:10.45.1.2:5432"
-alias devorgsinternal="gcloud beta run services proxy organisations-internal --project=bookcreator-dev --region=europe-west2"
-alias testorgsinternal="gcloud beta run services proxy organisations-internal --project=bookcreator-test --region=europe-west2"
-# export GOOGLE_APPLICATION_CREDENTIALS="$(readlink -f ~/creds/organisations-dev.json)"
+export GOOGLE_APPLICATION_CREDENTIALS="$(readlink -f ~/creds/organisations-dev.json)"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -26,18 +24,19 @@ valid_envs="dev:test:live"
 envmode=dev
 creds=""
 
-#!/bin/bash
-
 updateenv() {
   case "$envmode" in
     dev)
       export GCLOUD_PROJECT=bookcreator-dev
+      export GCLOUD_REGION=europe-west2
       ;;
     test)
       export GCLOUD_PROJECT=bookcreator-test
+      export GCLOUD_REGION=europe-west2
       ;;
     live)
       export GCLOUD_PROJECT=book-creator
+      export GCLOUD_REGION=us-central1
       ;;
   esac
 
@@ -51,6 +50,8 @@ updateenv() {
     fi
   fi
 }
+
+updateenv
 
 setenv() {
   if [ -z "$1" ]; then
@@ -93,16 +94,23 @@ env_prompt_info() {
   echo -n %B$(bgcol white " $prompt ")%b
 }
 
-go() {
-  cd "$HOME/Projects/$1"
-}
+PROMPT="%B%(?:%F{green}➜ :%F{red}➜ )%b"
+PROMPT+='$(env_prompt_info) %B%F{cyan}%c%f%b $(git_prompt_info)%b'
 
-chpwd() {
-  if [ -f "./.nvmrc" ]; then
-    nvm use
+orgsdb() {
+  if [ "$envmode" = "dev" ] || [ "$envmode" = "test" ]; then
+    local orgip=$(lpass show BookCreator/alloydb --notes|dasel -r toml ".$envmode.ip")
+    gcloud compute ssh alloydb-forwarder --project="$GCLOUD_PROJECT"  -- -NL 5432:$orgip:5432
   fi
 }
 
-PROMPT="%B%(?:%F{green}➜ :%F{red}➜ )%b"
-PROMPT+='$(env_prompt_info) %B%F{cyan}%c%f%b $(git_prompt_info)%b'
+orgsinternal() {
+  gcloud beta run services proxy organisations-internal --project=$GCLOUD_PROJECT --region=$GCLOUD_REGION
+}
+
+csp() {
+  cloud_sql_proxy -instances="${GCLOUD_PROJECT}:us-central1:analytics"
+}
+
+# alias orgsinternal="echo $GCLOUD_PROJECT/$GCLOUD_REGION && gcloud beta run services proxy organisations-internal --project=$GCLOUD_PROJECT --region=$GCLOUD_REGION"
 
