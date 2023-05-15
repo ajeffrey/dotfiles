@@ -20,12 +20,16 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-valid_envs="dev:test:live"
+valid_envs="local:dev:test:live"
 envmode=dev
 creds=""
 
 updateenv() {
   case "$envmode" in
+    local)
+      unset GCLOUD_PROJECT
+      unset GCLOUD_REGION
+      ;;
     dev)
       export GCLOUD_PROJECT=bookcreator-dev
       export GCLOUD_REGION=europe-west2
