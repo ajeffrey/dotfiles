@@ -9,9 +9,6 @@ export PATH="/opt/homebrew/opt/python@3.9/libexec/bin:$PATH"
 export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
 export PATH="$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
-source "$HOME/google-cloud-sdk/completion.zsh.inc"
-source "$HOME/google-cloud-sdk/path.zsh.inc"
-
 # export GCLOUD_PROJECT=bookcreator-dev
 
 export GOOGLE_APPLICATION_CREDENTIALS="$(readlink -f ~/creds/organisations-dev.json)"

@@ -14,6 +14,7 @@ alias cz=chezmoi
 alias zshrc="cz edit -a ~/.zshrc && zsh"
 alias vimrc="cz edit -a ~/.vimrc"
 alias bc.zsh="cz edit -a $ZSH/custom/bookcreator.zsh && zsh"
+alias pa="php artisan"
 
 {{- if eq .chezmoi.config.data.env "bookcreator" }}
 source $ZSH/custom/bookcreator.zsh
