@@ -16,15 +16,36 @@ alias zshrc="cz edit -a ~/.zshrc && zsh"
 alias vimrc="cz edit -a ~/.vimrc"
 alias pa="php artisan"
 
-{{- if eq .chezmoi.config.data.env "phone" }}
-
 function cx() {
   return $(command -v "$1" &>/dev/null)
 }
-if cx sv && cx nginx; then
-  print -P "%F{green}✔%f %F{white}nginx started%f"
-  sv up nginx
+
+function status() {
+  local flag=""
+  case "$1" in
+    y) flag="%F{green}✔%f" ;;
+    n) flag="%F{red}✘%f" ;;
+    *)
+      echo "invalid flag" 1>&2
+      return 255
+      ;;
+  esac
+
+  print -P "$flag ${@:2}"
+}
+
+if cx vimpager; then
+  export PAGER=vimpager
+  status y "vimpager enabled"
 else
-  print -P "%F{red}✘%f %F{white}nginx unavailable%f"
+  status n "vimpager unavailable"
 fi
+
+{{- if eq .chezmoi.config.data.env "phone" }}
+  if cx sv && cx nginx; then
+    status y "nginx started"
+    sv up nginx
+  else
+    status y "nginx unavailable"
+  fi
 {{- end }}
